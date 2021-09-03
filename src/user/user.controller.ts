@@ -1,7 +1,10 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CreateUserInfo } from 'src/create-user-info';
 import { Information } from 'src/information.interface';
 import { UserInformationService } from 'src/user-information/user-information.service';
+import { Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as sharp from 'sharp';
 
 @Controller('user')
 export class UserController {
@@ -44,5 +47,21 @@ export class UserController {
         } 
 
         return HttpStatus.OK;
+    }
+
+    @Post(':id/profilePic')
+    @UseInterceptors(FileInterceptor('file'))
+    uploadProfilePicture(@Param('id') id:string, @UploadedFile() file: Express.Multer.File){
+        
+        if (file.mimetype == 'image/png') {
+            sharp(file.path).resize(200,200).png({quality: 90}).toFile(file.path);
+            let info = this.userInfoService.returnInformation(id);
+            info.pp = file.path;
+            this.userInfoService.updateInformation(id, info);
+        }else{
+
+        }
+        
+        
     }
 }
