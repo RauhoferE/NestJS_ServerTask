@@ -5,5 +5,6 @@ export class CreateUserInfo {
     age: number;
     email: string;
     role: string;
-    pp: string
+    pp: string;
+    password: string
 }

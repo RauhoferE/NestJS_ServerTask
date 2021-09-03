@@ -4,5 +4,6 @@ export interface Information {
     age: number,
     email: string,
     role: string,
-    pp: string
+    pp: string,
+    password: string
 }

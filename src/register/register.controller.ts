@@ -3,7 +3,7 @@ import { ppid } from 'process';
 import { CreateUserInfo } from 'src/create-user-info';
 import { Information } from 'src/information.interface';
 import { UserInformationService } from 'src/user-information/user-information.service';
-
+// TODO: Check if any parameter is empty and throw exeption
 @Controller('register')
 export class RegisterController {
     constructor(private userInfoService: UserInformationService){}
@@ -11,11 +11,12 @@ export class RegisterController {
     registerUser(@Body() createUser: CreateUserInfo): CreateUserInfo{
         let info = <Information>{
             name : createUser.name,
-            surname : createUser.surname,
+            surname : createUser.surname, 
             age : createUser.age,
             email : createUser.email,
             role : 'User',
-            pp: createUser.pp
+            pp: createUser.pp,
+            password: createUser.password
         };
 
         if (createUser.nickName == undefined || createUser.nickName.length < 8) {
@@ -46,7 +47,8 @@ export class RegisterController {
             age : createUser.age,
             email : createUser.email,
             role : 'Admin',
-            pp: createUser.pp
+            pp: createUser.pp,
+            password: createUser.password
         };
 
         if (!this.userInfoService.addUser(createUser.nickName, info)) {
