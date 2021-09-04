@@ -5,6 +5,8 @@ import { UserInformationService } from 'src/user-information/user-information.se
 import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as sharp from 'sharp';
+import * as fs from 'fs';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 @Controller('user')
 export class UserController {
@@ -50,18 +52,52 @@ export class UserController {
     }
 
     @Post(':id/profilePic')
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('file', {
+        dest: './files',
+        fileFilter : (req, file, cb)  => {
+          if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpeg') {
+            req.fileValidationError = 'File has wrong format';
+            return cb(null, false);
+           }
+  
+          if (file.size > 500000) {
+            req.fileValidationError = 'File too large';
+            return cb(null, false);
+          }
+           cb(null, true);
+        }})
+        )
     uploadProfilePicture(@Param('id') id:string, @UploadedFile() file: Express.Multer.File){
-        
-        if (file.mimetype == 'image/png') {
-            sharp(file.path).resize(200,200).png({quality: 90}).toFile(file.path);
-            let info = this.userInfoService.returnInformation(id);
-            info.pp = file.path;
-            this.userInfoService.updateInformation(id, info);
-        }else{
+        let info = this.userInfoService.returnInformation(id)
 
+        if (!info) {
+            throw new HttpException('User not found!', HttpStatus.BAD_REQUEST);
+        }
+        if (file != null) {
+            let newFilePath = file.path + "1";
+            sharp(file.path)
+            .resize(200,200)
+            .png({quality: 90})
+            .toFile(newFilePath)
+            .then(() => {
+                fs.unlink(file.path, err => {
+                    if (err) {
+                        console.log("Couldn't delete file.");
+                        console.log(err);    
+                    }
+                });
+            })
+            .catch(err => {
+                if (err) {
+                    console.log(err);    
+                }
+            });
+
+            info.pp = newFilePath;
+            this.userInfoService.updateInformation(id, info);
+            return HttpStatus.OK;
         }
         
-        
+        throw new HttpException('Image does not have the correct format or is to big', HttpStatus.BAD_REQUEST);
     }
 }

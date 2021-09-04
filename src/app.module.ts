@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpException, HttpStatus, MiddlewareConsumer, Module, NestModule, Next } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserController } from './user/user.controller';
@@ -8,16 +8,21 @@ import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
-    MulterModule.register({
-      dest: './files',
-      fileFilter: function (req, file, cb) {
-        if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpeg') {
-          return cb(new Error('Only pngs and jpegs are allowed'), false);
-        }
-    
-        cb(null, true);
-      }
-    })
+    // MulterModule.register({
+    //   dest: './files',
+    //   fileFilter : (req, file, cb)  => {
+    //     if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpeg') {
+    //       req.fileValidationError = 'File has wrong format';
+    //       return cb(null, false);
+    //      }
+
+    //     if (file.size > 500000) {
+    //       req.fileValidationError = 'File too large';
+    //       return cb(null, false);
+    //     }
+    //      cb(null, true);
+    //   }
+    // })
   ],
   controllers: [AppController, UserController, RegisterController],
   providers: [AppService, UserInformationService],
