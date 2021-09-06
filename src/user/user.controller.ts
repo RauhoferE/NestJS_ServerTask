@@ -24,31 +24,19 @@ export class UserController {
             throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
         } 
 
-        console.log(info.name);
         return info;
     }
 
     //This method changes the information of the current user.
     @Post(':id')
     async changeInformation(@Param('id') id:string, @Body() informationUpdater: InformationUpdater){
-        //console.log(createUser.name);
-        // let info = <Information>{
-        //     name : createUser.name,
-        //     surname : createUser.surname, 
-        //     age : createUser.age,
-        //     email : createUser.email,
-        //     role : 'User',
-        //     pp: createUser.pp,
-        //     password: createUser.password
-        // };
 
-        if (informationUpdater.newInfo.nickname == undefined || informationUpdater.newInfo.nickname.length < 8 
-            || informationUpdater.newInfo.password == undefined || informationUpdater.newInfo.password.length < 8 || informationUpdater.newInfo.role != informationUpdater.oldInfo.role) {
+        if (informationUpdater == null || informationUpdater.oldInfo == undefined || informationUpdater.newInfo == undefined) {
             throw new HttpException('Cant update information', HttpStatus.BAD_REQUEST);
         }
 
         let result = await this.userInfoService.updateInformation(informationUpdater.oldInfo, informationUpdater.newInfo); 
-        // console.log(info.name);
+        
 
         if (result == false) {
             throw new HttpException('User not found', HttpStatus.BAD_REQUEST);

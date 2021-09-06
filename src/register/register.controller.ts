@@ -9,34 +9,12 @@ export class RegisterController {
     // First it checks the username and password and then it adds them to the userpool.
     @Post('user')
     async registerUser(@Body() createUser: Information){
-        // let info = <Information>{
-        //     name : createUser.name,
-        //     surname : createUser.surname, 
-        //     age : createUser.age,
-        //     email : createUser.email,
-        //     role : 'User',
-        //     pp: createUser.pp,
-        //     password: createUser.password
-        // };
+
         createUser.role = 'User';
 
-        if (createUser.nickname == undefined || createUser.nickname.length < 8 || createUser.password == undefined || createUser.password.length < 8) {
-            throw new HttpException('You must put in a username and password', HttpStatus.BAD_REQUEST);
-        }
-
         if (! await this.userInfoService.addUser(createUser)) {
-            throw new HttpException('User already created', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Error when registering User', HttpStatus.BAD_REQUEST);
         }
-        
-        // return <CreateUserInfo> {
-        //     name : createUser.name,
-        //     surname : createUser.surname,
-        //     age : createUser.age,
-        //     email : createUser.email,
-        //     role : 'User',
-        //     nickName : createUser.nickName,
-        //     pp: createUser.pp
-        // };
         
         return HttpStatus.OK;
     }
@@ -45,35 +23,12 @@ export class RegisterController {
     // First it checks the username and password and then it adds them to the userpool.
     @Post('admin')
     async registerAdmin(@Body() createUser: Information){
-        // let info = <Information>{
-        //     name : createUser.name,
-        //     surname : createUser.surname,
-        //     age : createUser.age,
-        //     email : createUser.email,
-        //     role : 'Admin',
-        //     pp: createUser.pp,
-        //     password: createUser.password
-        // };
 
         createUser.role = 'Admin';
-
-        if (createUser.nickname == undefined || createUser.nickname.length < 8 || createUser.password == undefined || createUser.password.length < 8) {
-            throw new HttpException('You must put in a username and password', HttpStatus.BAD_REQUEST);
-        }
 
         if (! await this.userInfoService.addUser(createUser)) {
             throw new HttpException('Admin already created', HttpStatus.BAD_REQUEST);
         }
-        
-        // return <CreateUserInfo> {
-        //     name : createUser.name,
-        //     surname : createUser.surname,
-        //     age : createUser.age,
-        //     email : createUser.email,
-        //     role : 'Admin',
-        //     nickName : createUser.nickName,
-        //     pp: createUser.pp
-        // };
 
         return HttpStatus.OK;
     }
