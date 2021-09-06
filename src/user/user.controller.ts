@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserInformationService, Information } from 'src/user-information/user-information.service';
 import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as sharp from 'sharp';
 import * as fs from 'fs';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 export type InformationUpdater = {
     oldInfo: Information,
@@ -16,6 +17,7 @@ export class UserController {
     constructor(private userInfoService: UserInformationService){}
 
     // This method returns the information of the user. 
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
     async returnInformation(@Param('id') id:string): Promise<Information>{
         let info = await this.userInfoService.returnInformation(id); 
@@ -28,6 +30,7 @@ export class UserController {
     }
 
     //This method changes the information of the current user.
+    @UseGuards(JwtAuthGuard)
     @Post(':id')
     async changeInformation(@Param('id') id:string, @Body() informationUpdater: InformationUpdater){
 
@@ -46,6 +49,7 @@ export class UserController {
     }
 
     // This method uploads a profile picture for the current user.
+    @UseGuards(JwtAuthGuard)
     @Post(':id/profilePic')
     @UseInterceptors(FileInterceptor('file', {
         dest: './files',

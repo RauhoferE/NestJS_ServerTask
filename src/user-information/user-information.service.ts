@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { type } from 'os';
+import { use } from 'passport';
 
 // The class that holds the information about the user.
 export type Information = {
@@ -51,31 +52,12 @@ export class UserInformationService {
     // If the username doesnt exist it returns false.
     async returnInformation(nickname: string): Promise<Information>{
         let user = this.userInformation.find(user => user.nickname == nickname);
-        // let index_user = -1;
 
-        // console.log("Hit")
-        // console.log(this.userInformation.length)
-        // console.log(this)
-        // this.userInformation.forEach(user => {
-        //     let i = 0;
-        //     console.log(user.nickname)
-        //     console.log("Hit 2")
-        //     if (user.nickname == nickname) {
-        //         index_user = i;
-        //         return;
-        //     }
-        //     i++;
-        // });
-
-        // if (index_user == -1) {
-        //     return null;
-        // }
-        console.log(this.userInformation.length)
         if (user == undefined) {
             return null
         }
 
-        return null;
+        return user;
     }
 
     // This method updates a user's information from the userpool.
@@ -95,9 +77,8 @@ export class UserInformationService {
             }
             i++;
         });
+        
         if (index_user == -1) {
-            console.log(oldInfo.nickname);
-            console.log("Second case");
             return false;
         }
 

@@ -6,10 +6,10 @@ import { UserInformationService } from './user-information/user-information.serv
 import { RegisterController } from './register/register.controller';
 import { AuthService } from './auth/auth.service';
 import { LocalStrategy } from './auth/local.strategy';
-import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { jwtConstants } from './auth/constants';
   })
   ],
   controllers: [AppController, UserController, RegisterController],
-  providers: [AppService, UserInformationService, AuthService, LocalStrategy],
+  providers: [AppService, UserInformationService, AuthService, LocalStrategy, JwtStrategy],
   exports: [UserInformationService]
 })
 export class AppModule {}
