@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { type } from 'os';
 import { use } from 'passport';
+import { Role } from './role.enum';
 
 // The class that holds the information about the user.
 export type Information = {
@@ -9,7 +10,7 @@ export type Information = {
     surname: string,
     age: number,
     email: string,
-    role: string,
+    role: Role,
     pp: string,
     password: string
 }

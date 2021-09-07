@@ -6,6 +6,7 @@ import * as sharp from 'sharp';
 import * as fs from 'fs';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Role } from 'src/user-information/role.enum';
 
 export type InformationUpdater = {
     oldInfo: Information,
@@ -17,6 +18,7 @@ export class UserController {
     constructor(private userInfoService: UserInformationService){}
 
     // This method returns the information of the user. 
+    
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async returnInformation(@Param('id') id:string): Promise<Information>{

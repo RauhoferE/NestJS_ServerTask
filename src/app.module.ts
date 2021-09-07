@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -23,4 +24,5 @@ import { JwtStrategy } from './auth/jwt.strategy';
   providers: [AppService, UserInformationService, AuthService, LocalStrategy, JwtStrategy],
   exports: [UserInformationService]
 })
-export class AppModule {}
+export class AppModule{
+}
