@@ -11,7 +11,7 @@ export class RegisterController {
     @Post('user')
     async registerUser(@Body() createUser: Information){
 
-        createUser.role = Role.Admin;
+        createUser.role = Role.User;
 
         if (! await this.userInfoService.addUser(createUser)) {
             throw new HttpException('Error when registering User', HttpStatus.BAD_REQUEST);
@@ -25,7 +25,7 @@ export class RegisterController {
     @Post('admin')
     async registerAdmin(@Body() createUser: Information){
 
-        createUser.role = Role.User;
+        createUser.role = Role.Admin;
 
         if (! await this.userInfoService.addUser(createUser)) {
             throw new HttpException('Admin already created', HttpStatus.BAD_REQUEST);

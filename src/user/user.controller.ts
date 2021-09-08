@@ -7,7 +7,11 @@ import * as fs from 'fs';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/user-information/role.enum';
+import { Roles } from 'src/auth/role.decorator';
+import { RolesGuard } from 'src/auth/role.guard';
 
+// This type is for updating the old information of the user.
+// This is mainly used in the post method of ID.
 export type InformationUpdater = {
     oldInfo: Information,
     newInfo: Information
@@ -18,7 +22,6 @@ export class UserController {
     constructor(private userInfoService: UserInformationService){}
 
     // This method returns the information of the user. 
-    
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async returnInformation(@Param('id') id:string): Promise<Information>{
@@ -50,8 +53,9 @@ export class UserController {
         return HttpStatus.OK;
     }
 
-    // This method uploads a profile picture for the current user.
-    @UseGuards(JwtAuthGuard)
+    // This method uploads a profile picture for the current user if the user has the role of admin.
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
     @Post(':id/profilePic')
     @UseInterceptors(FileInterceptor('file', {
         dest: './files',

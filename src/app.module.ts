@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, MiddlewareConsumer, Module, NestModule, Next } from '@nestjs/common';
+import { HttpException, HttpStatus, MiddlewareConsumer, Module, NestModule, Next, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserController } from './user/user.controller';
@@ -10,7 +10,6 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { JwtStrategy } from './auth/jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,5 +23,4 @@ import { APP_GUARD } from '@nestjs/core';
   providers: [AppService, UserInformationService, AuthService, LocalStrategy, JwtStrategy],
   exports: [UserInformationService]
 })
-export class AppModule{
-}
+export class AppModule{}

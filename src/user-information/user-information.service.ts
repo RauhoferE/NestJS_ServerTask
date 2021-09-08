@@ -53,7 +53,7 @@ export class UserInformationService {
     // If the username doesnt exist it returns false.
     async returnInformation(nickname: string): Promise<Information>{
         let user = this.userInformation.find(user => user.nickname == nickname);
-
+        
         if (user == undefined) {
             return null
         }
