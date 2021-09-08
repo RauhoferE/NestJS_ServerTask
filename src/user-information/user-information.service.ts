@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { type } from 'os';
-import { use } from 'passport';
 import { Role } from './role.enum';
 
 // The class that holds the information about the user.

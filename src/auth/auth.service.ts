@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserInformationService } from 'src/user-information/user-information.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -24,15 +24,9 @@ export class AuthService {
       return null;
     }
 
-    // This methods saves the username and the role of the user in the jwt token.
-    // It throws an exception if the user is unauthorized for the role.
-    async login(user, role){
-      const userFromDB = await this.usersService.returnInformation(user.nickname);
-
-      if (userFromDB.role != role) {
-        throw new UnauthorizedException("Role is not correct");
-      }
-      const payload = { username: user.nickname, role: user.role };
+    // This methods saves the username in the jwt token.
+    async login(user){
+      const payload = { username: user.nickname};
       return {
         access_token: this.jwtService.sign(payload),
       };

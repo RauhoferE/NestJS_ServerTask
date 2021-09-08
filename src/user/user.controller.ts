@@ -1,14 +1,14 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, StreamableFile, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserInformationService, Information } from 'src/user-information/user-information.service';
 import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as sharp from 'sharp';
 import * as fs from 'fs';
-import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Role } from 'src/user-information/role.enum';
 import { Roles } from 'src/auth/role.decorator';
 import { RolesGuard } from 'src/auth/role.guard';
+import { UserNameGuard } from 'src/auth/username.guard';
 
 // This type is for updating the old information of the user.
 // This is mainly used in the post method of ID.
@@ -22,7 +22,7 @@ export class UserController {
     constructor(private userInfoService: UserInformationService){}
 
     // This method returns the information of the user. 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, UserNameGuard)
     @Get(':id')
     async returnInformation(@Param('id') id:string): Promise<Information>{
         let info = await this.userInfoService.returnInformation(id); 
@@ -35,7 +35,7 @@ export class UserController {
     }
 
     //This method changes the information of the current user.
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, UserNameGuard)
     @Post(':id')
     async changeInformation(@Param('id') id:string, @Body() informationUpdater: InformationUpdater){
 
@@ -54,7 +54,7 @@ export class UserController {
     }
 
     // This method uploads a profile picture for the current user if the user has the role of admin.
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(JwtAuthGuard, UserNameGuard, RolesGuard)
     @Roles(Role.Admin)
     @Post(':id/profilePic')
     @UseInterceptors(FileInterceptor('file', {
@@ -92,6 +92,15 @@ export class UserController {
                         console.log(err);    
                     }
                 });
+                if (info.pp != undefined) {
+                    fs.unlink(info.pp, err => {
+                        if (err) {
+                            console.log("Couldn't delete file.");
+                            console.log(err);    
+                        }
+                    });
+                }
+
             })
             .catch(err => {
                 if (err) {
@@ -99,7 +108,6 @@ export class UserController {
                 }
             });
 
-            
             let newInfo = JSON.parse(JSON.stringify(info));
             newInfo.pp = newFilePath;
             await this.userInfoService.updateInformation(info, newInfo);
@@ -108,4 +116,23 @@ export class UserController {
         
         throw new HttpException('Image does not have the correct format or is to big', HttpStatus.BAD_REQUEST);
     }
+
+    // This method returns the currently used profile picture of the user.
+    @UseGuards(JwtAuthGuard, UserNameGuard, RolesGuard)
+    @Get(':id/profilePic')
+    async getProfilePicture(@Param('id') id:string) : Promise<StreamableFile>{
+
+        let info = await this.userInfoService.returnInformation(id);
+        if (!info) {
+            throw new HttpException('User not found!', HttpStatus.BAD_REQUEST);
+        }
+
+        if (info.pp == undefined) {
+            throw new HttpException('No profile picture found', HttpStatus.BAD_REQUEST);
+        }
+
+        const file = fs.createReadStream(info.pp);
+        return new StreamableFile(file);
+    }
+
 }
